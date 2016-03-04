@@ -1,7 +1,7 @@
 import uuid
 from bottle import Bottle, debug
 from bottle import request, response
-from bottle import jinja2_view as view, static_file
+from bottle import jinja2_view as view
 import logging as log
 from models import Counter
 from google.appengine.api import taskqueue
@@ -10,10 +10,6 @@ from google.appengine.api import taskqueue
 app = application = Bottle()
 secret = 'secret'
 debug(True)
-
-@app.route('/s/<filepath:path>')
-def serve_static(filepath):
-    return static_file(filepath, root='static/')
 
 @app.route('/')
 @view('home.html')
@@ -30,7 +26,7 @@ def hello():
     msg = request.get_cookie('msg', secret=secret)
     if msg is None:
         log.info('Api request without sid.')
-    taskqueue.add(url='/tasks/default')
+    taskqueue.add(url='/tasks/count')
     try:
         counter = Counter.query(Counter.name == 'hello').fetch()[0]
         count = counter.count

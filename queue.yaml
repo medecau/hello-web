@@ -1,0 +1,8 @@
+# https://cloud.google.com/appengine/docs/python/taskqueue/overview-push
+total_storage_limit: 100M
+
+queue:
+- name: default
+  rate: 10/s
+  bucket_size: 20
+  max_concurrent_requests: 10

@@ -4,6 +4,8 @@ from bottle import request, response
 from bottle import jinja2_view as view, static_file
 import logging as log
 from models import Counter
+from google.appengine.api import taskqueue
+
 
 app = application = Bottle()
 secret = 'secret'
@@ -28,6 +30,25 @@ def hello():
     msg = request.get_cookie('msg', secret=secret)
     if msg is None:
         log.info('Api request without sid.')
+    taskqueue.add(url='/tasks/default')
+    try:
+        counter = Counter.query(Counter.name == 'hello').fetch()[0]
+        count = counter.count
+    except IndexError:
+        count = 0
+    return '%s - %s' % (msg, str(count))
+    return str(counter)
+
+@app.route('/tasks/hourly')
+def hourly():
+    if request.headers.get('X-Appengine-Cron') is None:
+        response.status = 404
+        return
+    else:
+        return 'ok'
+
+@app.route('/tasks/default', ['POST'])
+def count():
     try:
         counter = Counter.query(Counter.name == 'hello').fetch()[0]
     except IndexError:
@@ -35,9 +56,7 @@ def hello():
         counter = Counter(name='hello', count=0)
     counter.count += 1
     counter.put()
-    return '%s - %s' % (msg, str(counter.count))
-
-    return str(counter)
+    return
 
 
 if __name__ == '__main__':

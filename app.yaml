@@ -6,8 +6,8 @@ threadsafe: yes
 
 
 handlers:
-- url: .*  # This regex directs all routes to main.bottle
-  script: hello_bottle.app
+- url: .*
+  script: main.app
 
 
 libraries:

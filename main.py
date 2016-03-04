@@ -39,24 +39,6 @@ def hello():
     return '%s - %s' % (msg, str(count))
     return str(counter)
 
-@app.route('/tasks/hourly')
-def hourly():
-    if request.headers.get('X-Appengine-Cron') is None:
-        response.status = 404
-        return
-    else:
-        return 'ok'
-
-@app.route('/tasks/default', ['POST'])
-def count():
-    try:
-        counter = Counter.query(Counter.name == 'hello').fetch()[0]
-    except IndexError:
-        log.info('New counter.')
-        counter = Counter(name='hello', count=0)
-    counter.count += 1
-    counter.put()
-    return
 
 
 if __name__ == '__main__':
